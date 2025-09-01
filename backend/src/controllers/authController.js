@@ -3,12 +3,62 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from '../prisma/index.js';
 
+// Generate JWT and set it in an HTTP-Only cookie
+const generateToken = (res, userId) => {
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+        expiresIn: '30d',
+    });
+
+    res.cookie("jwt", token, {
+        httpOnly: true, // JS on frontend cannot access it (XSS protection)
+        secure: process.env.NODE_ENV === "production", // only send over HTTPS in prod
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
+    });
+};
+
+// Authenticate user and Get Token .Public Route
+// @route   POST /api/auth/login
 export const loginUser = asyncHandler(async (req, res) => {
-    /* TODO: Implement login logic */
-    res.json({ message: 'Login endpoint' });
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(400);
+        throw new Error('Please provide email and password');
+    }
+
+    // Find user by email and include their profile data
+    const user = await prisma.user.findUnique({
+        where: { email },
+        include: { profile: true }
+    });
+
+    // Check if user exists and password matches
+    if (user && (await bcrypt.compare(password, user.password))) {
+        // Prepare user response data
+        const userResponse = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            createdAt: user.createdAt,
+            profile: user.profile
+        };
+
+        // Generate token and set cookie
+        generateToken(res, user.id);
+
+        res.status(200).json({
+            message: 'Login successful',
+            user: userResponse
+        });
+    } else {
+        res.status(401);
+        throw new Error('Invalid email or password');
+    }
 });
 
 // Here we will just register a new farmer Admin is already pre-seeded
+// POST /api/auth/register
 export const registerUser = asyncHandler(async (req, res) => {
     const { email, password, fullName, location, contactInfo } = req.body;
 
@@ -63,21 +113,27 @@ export const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json(newUser);
 });
 
-// Generate JWT and set it in an HTTP-Only cookie
-const generateToken = (res, userId) => {
-    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-    });
-
-    // Set JWT as HTTP-Only cookie
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-};
 
 export const getMe = asyncHandler(async (req, res) => {
-    res.status(200).json(req.user);
+    try {
+        // req.user is set by the auth middleware
+        const userWithProfile = await prisma.user.findUnique({
+            where: { id: req.user.id },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                createdAt: true,
+                profile: true,
+            },
+        });
+
+
+        res.status(200).json(userWithProfile);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error Ocurred retrieve get me details');
+    }
 });
 
 // @desc    Logout user / clear cookie
