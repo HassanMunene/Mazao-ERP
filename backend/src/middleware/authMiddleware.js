@@ -1,0 +1,33 @@
+import jwt from 'jsonwebtoken';
+import prisma from '../prisma/index';
+
+export const protect = async (req, res, next) => {
+    let token;
+    if (req.headers.authorization?.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            // Attach full user object to the request except password.
+            req.user = await prisma.user.findUnique({
+                where: {id: decoded.id},
+                select: { id: true, email: true, role: true, createdAt: true },
+            });
+            next();
+        } catch (error) {
+            console.error(error);
+            res.status(401).json({ message: "Not authorized, token Failed"});
+        }
+    }
+
+    if (!token) {
+        res.status(401).json({ message: 'Not authorized, no token' });
+    }
+};
+
+export const admin = (req, res, next) => {
+    if (req.user && req.user.role === 'ADMIN') {
+        next();
+    } else {
+        req.status(403).json({ message: 'Access denied. Admin rights required.'});
+    }
+};
