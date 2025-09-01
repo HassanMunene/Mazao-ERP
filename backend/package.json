@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "db:seed": "node prisma/seed.js"
   },
   "author": "Hassan Munene Awanzi",
   "license": "ISC",

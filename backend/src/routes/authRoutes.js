@@ -4,8 +4,8 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/register', registerUser);
 
 // Simple endpoint to clear the cookie
 router.get('/logout', logoutUser);
