@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(FARMER) // Admin or Farmer
+  profile   Profile?
+  crops     Crop[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName    String
+  avatar      String?  // URL for a profile picture
+  location    String?  // e.g., "Nakuru County"
+  contactInfo String?  // Phone number
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model Crop {
+  id           String   @id @default(cuid())
+  name         String   // e.g., "Maize"
+  type         CropType // e.g., CEREAL, LEGUME, VEGETABLE
+  plantingDate DateTime
+  harvestDate  DateTime?
+  quantity     Int      // in kgs or bags
+  farmerId     String
+  farmer       User     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  description  String?
+  status       CropStatus @default(PLANTED) // PLANTED, HARVESTED, SOLD
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("crops")
+}
+
+enum UserRole {
+  ADMIN
+  FARMER
+}
+
+enum CropType {
+  CEREAL
+  LEGUME
+  VEGETABLE
+  FRUIT
+  ROOT_TUBER
+  OTHER
+}
+
+enum CropStatus {
+  PLANTED
+  HARVESTED
+  SOLD
+}
