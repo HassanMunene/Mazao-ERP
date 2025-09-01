@@ -1,7 +1,12 @@
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import prisma from '../prisma/index';
+import prisma from '../prisma/index.js';
+
+export const loginUser = asyncHandler(async (req, res) => {
+    /* TODO: Implement login logic */
+    res.json({ message: 'Login endpoint' });
+});
 
 // Here we will just register a new farmer Admin is already pre-seeded
 export const registerUser = asyncHandler(async (req, res) => {
@@ -70,3 +75,18 @@ const generateToken = (res, userId) => {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 };
+
+export const getMe = asyncHandler(async (req, res) => {
+    res.status(200).json(req.user);
+});
+
+// @desc    Logout user / clear cookie
+// @route   POST /api/auth/logout
+// @access  Public
+export const logoutUser = asyncHandler(async (req, res) => {
+    res.cookie('jwt', '', {
+        httpOnly: true,
+        expires: new Date(0), // Expire the cookie immediately
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+});
