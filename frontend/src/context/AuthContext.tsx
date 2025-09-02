@@ -25,11 +25,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             const token = Cookies.get('jwt');
             if (token) {
+                // Set the authorization header for all future requests
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
                 const response = await api.get('/auth/me');
                 setUser(response.data);
             }
         } catch (error) {
+            console.error('Auth check failed:', error);
             Cookies.remove('jwt');
+            delete api.defaults.headers.common['Authorization'];
+            setUser(null);
         } finally {
             setLoading(false);
         }

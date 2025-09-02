@@ -6,7 +6,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from './lib/theme-provider';
+
+import { AdminLayout } from './components/layout/AdminLayout';
+import FarmersPage from './pages/Admin/FarmersPage';
+import CropsPage from './pages/Admin/CropsPage';
+import AnalyticsPage from './pages/Admin/AnalyticsPage';
+import SettingsPage from './pages/Admin/SettingsPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; admin?: boolean }> = ({
   children,
@@ -35,14 +42,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute admin>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="farmers" element={<FarmersPage />} />
+        <Route path="crops" element={<CropsPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+        {/* Add other admin routes */}
+      </Route>
     </Routes>
   );
 }
@@ -50,12 +57,14 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <Toaster />
-      <AuthProvider>
-        <div className="min-h-screen bg-background">
-          <AppRoutes />
-        </div>
-      </AuthProvider>
+      <ThemeProvider>
+        <Toaster />
+        <AuthProvider>
+          <div className="min-h-screen bg-background">
+            <AppRoutes />
+          </div>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }
