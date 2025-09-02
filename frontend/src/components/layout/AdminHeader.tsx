@@ -19,6 +19,8 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/lib/theme-provider';
 import { useAuth } from '@/context/AuthContext';
 
+import ConfirmationLogout from '../dashboard/ConfirmationLogout';
+
 interface HeaderProps {
     title?: string;
     onMenuToggle?: () => void;
@@ -87,6 +89,19 @@ export function AdminHeader({
     const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [showMobileSearch, setShowMobileSearch] = useState(false);
+    const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+
+    // Handle logout with confirmation
+    const handleLogout = useCallback(() => {
+        setIsLogoutDialogOpen(true);
+    }, []);
+
+    const confirmLogout = useCallback(() => {
+        logout();
+        setIsLogoutDialogOpen(false);
+    }, [logout]);
+
 
     // Sample notifications for Mazao ERP
     const notifications = useMemo(() => [
@@ -127,11 +142,6 @@ export function AdminHeader({
     const toggleMobileSearch = useCallback(() => {
         setShowMobileSearch(prev => !prev);
     }, []);
-
-    const handleLogout = useCallback(() => {
-        logout();
-        navigate('/login');
-    }, [logout, navigate]);
 
     return (
         <>
@@ -322,6 +332,12 @@ export function AdminHeader({
                     </DropdownMenu>
                 </div>
             </header>
+            {/* confirm logout modal */}
+            <ConfirmationLogout
+                isLogoutDialogOpen={isLogoutDialogOpen}
+                setIsLogoutDialogOpen={setIsLogoutDialogOpen}
+                confirmLogout={confirmLogout}
+            />
         </>
     );
 }

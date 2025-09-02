@@ -3,17 +3,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
-    LayoutDashboard, Users, Sprout, BarChart3, 
+    LayoutDashboard, Users, Sprout, BarChart3,
     Shield, Settings, LogOut, User, X, Calendar,
     FileText, MapPin, Warehouse, Truck, ChevronDown, Leaf
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-    Dialog, DialogContent, DialogDescription, DialogHeader,
-    DialogTitle, DialogFooter, DialogClose
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+
 import { useAuth } from '@/context/AuthContext';
+import ConfirmationLogout from '../dashboard/ConfirmationLogout';
 
 // Types
 interface SidebarItem {
@@ -207,8 +204,6 @@ export function AdminSidebar({
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
     const [isTemporarilyExpanded, setIsTemporarilyExpanded] = useState(false);
-
-    console.log("Yiiiiiiiiii", user);
 
     // Generate Mazao-specific sidebar items
     const sidebarItems: SidebarItem[] = useMemo(() => [
@@ -525,24 +520,11 @@ export function AdminSidebar({
             </aside>
 
             {/* Logout Confirmation Dialog */}
-            <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Confirm Logout</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to logout from the Mazao ERP Admin Portal?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button variant="destructive" onClick={confirmLogout}>
-                            Logout
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <ConfirmationLogout
+                isLogoutDialogOpen={isLogoutDialogOpen}
+                setIsLogoutDialogOpen={setIsLogoutDialogOpen}
+                confirmLogout={confirmLogout}
+            />
         </>
     );
 }

@@ -15,6 +15,7 @@ const generateToken = (res, userId) => {
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
     });
+    return token;
 };
 
 // Authenticate user and Get Token .Public Route
@@ -45,11 +46,12 @@ export const loginUser = asyncHandler(async (req, res) => {
         };
 
         // Generate token and set cookie
-        generateToken(res, user.id);
+        const token = generateToken(res, user.id);
 
         res.status(200).json({
             message: 'Login successful',
-            user: userResponse
+            user: userResponse,
+            token: token
         });
     } else {
         res.status(401);
@@ -108,9 +110,14 @@ export const registerUser = asyncHandler(async (req, res) => {
         };
     });
 
-    // 5. Generate Token and respond
-    generateToken(res, newUser.id);
-    res.status(201).json(newUser);
+    // Generate Token and respond
+    const token = generateToken(res, newUser.id);
+
+    res.status(201).json({
+        message: 'User created successfully',
+        user: userResponse,
+        token: token
+    });
 });
 
 
@@ -140,9 +147,14 @@ export const getMe = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/logout
 // @access  Public
 export const logoutUser = asyncHandler(async (req, res) => {
-    res.cookie('jwt', '', {
-        httpOnly: true,
-        expires: new Date(0), // Expire the cookie immediately
-    });
-    res.status(200).json({ message: 'Logged out successfully' });
+    try {
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            expires: new Date(0),
+        });
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        console.log("Error logging out", error);
+        throw new Error('Error Ocurred when logging out');
+    }
 });
