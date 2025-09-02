@@ -120,7 +120,7 @@ export const FarmerForm: React.FC<FarmerFormProps> = ({ mode, farmerId }) => {
             };
 
             if (mode === 'create') {
-                await api.post('/auth/register', payload);
+                await api.post('/users/farmers/new', payload);
                 toast('Farmer created successfully');
             } else {
                 await api.put(`/users/${farmerId}`, payload);

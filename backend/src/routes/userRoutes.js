@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, getUserById, updateUser, deleteUser, getUserCount } from '../controllers/userController.js';
+import { getUsers, getUserById, updateUser, deleteUser, getUserCount, createFarmer } from '../controllers/userController.js';
 import { protect, admin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -28,5 +28,10 @@ router.put('/:id', protect, admin, updateUser);
 // @desc    Delete user by ID
 // @access  Private/Admin
 router.delete('/:id', protect, admin, deleteUser);
+
+// @route   POST /api/users/farmers/new
+// @desc    Add New Farmers
+// @access  Private/Admin
+router.post('/farmers/new', protect, admin, createFarmer);
 
 export default router;

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import prisma from '../prisma/index.js';
+import bcrypt from 'bcryptjs';
 
 // @desc    Get all users with pagination and filtering
 // @route   GET /api/users
@@ -373,3 +374,89 @@ export const getUserCount = asyncHandler(async (req, res) => {
     }
 });
 
+
+// @desc    Create a new farmer (Admin only)
+// @route   POST /api/users/farmers/new
+// @access  Private/Admin
+export const createFarmer = asyncHandler(async (req, res) => {
+    try {
+        const { email, password, fullName, location, contactInfo } = req.body;
+
+        // Validation
+        if (!email || !password || !fullName) {
+            res.status(400);
+            throw new Error('Email, password, and full name are required');
+        }
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            res.status(400);
+            throw new Error('Please enter a valid email address');
+        }
+
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (existingUser) {
+            res.status(400);
+            throw new Error('User already exists with this email');
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create user and profile in transaction
+        const newUser = await prisma.$transaction(async (tx) => {
+            const user = await tx.user.create({
+                data: {
+                    email,
+                    password: hashedPassword,
+                    role: 'FARMER',
+                },
+            });
+
+            const profile = await tx.profile.create({
+                data: {
+                    userId: user.id,
+                    fullName,
+                    location: location || null,
+                    contactInfo: contactInfo || null,
+                },
+            });
+
+            // Return user data without password
+            return {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+                profile: profile
+            };
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Farmer created successfully',
+            data: newUser
+        });
+
+    } catch (error) {
+        console.error('Create farmer error:', error);
+
+        if (error.message.includes('required') ||
+            error.message.includes('valid') ||
+            error.message.includes('already exists')) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Server error while creating farmer'
+            });
+        }
+    }
+});
