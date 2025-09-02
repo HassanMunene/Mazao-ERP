@@ -71,18 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (token && savedUser) {
                 // Set the authorization header for all future requests
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-                // Verify token is still valid with backend
-                try {
-                    const response = await api.get('/auth/me');
-                    setUser(response.data);
-                    // Update stored user data with fresh data from server
-                    storage.set(USER_DATA_KEY, response.data);
-                } catch (error) {
-                    console.warn('Token validation failed, using stored data:', error);
-                    // Use stored user data if validation fails (offline support)
-                    setUser(savedUser);
-                }
+                setUser(savedUser);
             }
         } catch (error) {
             console.error('Auth check failed:', error);

@@ -6,7 +6,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/Admin/AdminDashboard';
 import Unauthorized from './pages/Unauthorized';
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from './lib/theme-provider';
@@ -16,6 +16,8 @@ import FarmersPage from './pages/Admin/FarmersPage';
 import CropsPage from './pages/Admin/CropsPage';
 import AnalyticsPage from './pages/Admin/AnalyticsPage';
 import SettingsPage from './pages/Admin/SettingsPage';
+import AddFarmerPage from './pages/Admin/AddFarmerPage';
+import EditFarmerPage from './pages/Admin/EditFarmerPage';
 
 // Handle Role based redirects after login
 const RoleBasedRedirect = () => {
@@ -76,6 +78,8 @@ function AppRoutes() {
 			>
 				<Route index element={<AdminDashboard />} />
 				<Route path="farmers" element={<FarmersPage />} />
+				<Route path="farmers/new" element={<AddFarmerPage />} />
+				<Route path="farmers/:id/edit" element={<EditFarmerPage />} />
 				<Route path="crops" element={<CropsPage />} />
 				<Route path="analytics" element={<AnalyticsPage />} />
 				<Route path="settings" element={<SettingsPage />} />

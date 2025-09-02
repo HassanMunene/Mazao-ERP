@@ -225,11 +225,9 @@ export function AdminSidebar({
             title: 'Farmers',
             href: '/admin/farmers',
             icon: Users,
-            badge: 12,
             children: [
                 { id: 'all-farmers', title: 'All Farmers', href: '/admin/farmers', icon: Users },
-                { id: 'new-farmers', title: 'New Registrations', href: '/admin/farmers/new', icon: User, badge: 5 },
-                { id: 'farmer-groups', title: 'Cooperative Groups', href: '/admin/farmers/groups', icon: Users },
+                { id: 'new-farmers', title: 'New Farmers', href: '/admin/farmers/new', icon: User},
             ],
         },
         {
@@ -448,7 +446,7 @@ export function AdminSidebar({
                     ) : (
                         <Link to="/admin">
                             <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
-                                <Sprout className="h-5 w-5 text-white" />
+                                <Leaf className="h-5 w-5 text-white" />
                             </div>
                         </Link>
                     )}
