@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMyProfile, updateMyProfile } from '../controllers/profileController.js';
+import { getMyProfile, updateMyProfile, getDashboardStats } from '../controllers/profileController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -8,5 +8,7 @@ const router = express.Router();
 router.use(protect);
 
 router.route('/me').get(getMyProfile).put(updateMyProfile);
+router.get('/stats', getDashboardStats);
+
 
 export default router;
