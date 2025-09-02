@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Search, Plus, Edit, Trash2, Eye, ChevronLeft, ChevronRight, Loader2, User, Ellipsis } from 'lucide-react';
+import {
+    Users, Search, Plus, Edit, Trash2, Eye, ChevronLeft, ChevronRight,
+    Loader2, User, Ellipsis, Phone, MapPin, Calendar, Crop, Mail
+} from 'lucide-react';
 import { api } from '@/lib/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -13,6 +16,13 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Farmer {
     id: string;
@@ -47,6 +57,7 @@ interface FarmersResponse {
 const FarmersPage: React.FC = () => {
     const navigate = useNavigate();
     const [farmers, setFarmers] = useState<Farmer[]>([]);
+    const [allFarmers, setAllFarmers] = useState<Farmer[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -55,35 +66,59 @@ const FarmersPage: React.FC = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [farmerToDelete, setFarmerToDelete] = useState<Farmer | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
+    const [selectedFarmer, setSelectedFarmer] = useState<Farmer | null>(null);
+
+    console.log(farmers)
 
     useEffect(() => {
-        fetchFarmers();
-    }, [currentPage]);
+        fetchAllFarmers();
+    }, []);
 
-    const fetchFarmers = async () => {
+    // Fetch all farmers initially for client-side search
+    const fetchAllFarmers = async () => {
         try {
             setLoading(true);
             const response = await api.get<FarmersResponse>('/users', {
                 params: {
-                    page: currentPage,
-                    limit: 10,
-                    role: 'FARMER',
-                    search: searchTerm || undefined
+                    page: 1,
+                    limit: 1000,
+                    role: 'FARMER'
                 }
             });
 
             if (response.data.success) {
-                setFarmers(response.data.data.users);
-                setTotalPages(response.data.data.pagination.totalPages);
-                setTotalFarmers(response.data.data.pagination.totalUsers);
+                setAllFarmers(response.data.data.users);
+                setFarmers(response.data.data.users.slice(0, 10));
+                setTotalPages(Math.ceil(response.data.data.users.length / 10));
+                setTotalFarmers(response.data.data.users.length);
             }
         } catch (error: any) {
             console.error('Failed to fetch farmers:', error);
-            toast('Failed to fetch farmers');
+            toast.error('Failed to fetch farmers');
         } finally {
             setLoading(false);
         }
     };
+
+    // Client-side search implementation
+    const filteredFarmers = useMemo(() => {
+        if (!searchTerm) return allFarmers;
+
+        const term = searchTerm.toLowerCase();
+        return allFarmers.filter(farmer =>
+            farmer.profile?.fullName?.toLowerCase().includes(term) ||
+            farmer.email.toLowerCase().includes(term) ||
+            farmer.profile?.location?.toLowerCase().includes(term) ||
+            farmer.profile?.contactInfo?.includes(term)
+        );
+    }, [allFarmers, searchTerm]);
+
+    // Paginate the filtered results
+    const paginatedFarmers = useMemo(() => {
+        const startIndex = (currentPage - 1) * 10;
+        return filteredFarmers.slice(startIndex, startIndex + 10);
+    }, [filteredFarmers, currentPage]);
 
     const handleDeleteClick = (farmer: Farmer) => {
         setFarmerToDelete(farmer);
@@ -97,12 +132,16 @@ const FarmersPage: React.FC = () => {
             setDeleting(true);
             await api.delete(`/users/${farmerToDelete.id}`);
 
-            toast('Successfully deleted');
-            // Refresh the list
-            fetchFarmers();
+            toast.success('Farmer deleted successfully');
+
+            // Update local state instead of refetching
+            setAllFarmers(prev => prev.filter(f => f.id !== farmerToDelete.id));
+            setFarmers(prev => prev.filter(f => f.id !== farmerToDelete.id));
+            setTotalFarmers(prev => prev - 1);
+
         } catch (error: any) {
             console.error('Failed to delete farmer:', error);
-            toast('Failed to delete farmer');
+            toast.error('Failed to delete farmer');
         } finally {
             setDeleting(false);
             setDeleteDialogOpen(false);
@@ -110,10 +149,14 @@ const FarmersPage: React.FC = () => {
         }
     };
 
+    const handleViewDetails = (farmer: Farmer) => {
+        setSelectedFarmer(farmer);
+        setViewDialogOpen(true);
+    };
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         setCurrentPage(1); // Reset to first page when searching
-        fetchFarmers();
     };
 
     const formatDate = (dateString: string) => {
@@ -124,7 +167,17 @@ const FarmersPage: React.FC = () => {
         });
     };
 
-    if (loading && farmers.length === 0) {
+    const formatDateTime = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-KE', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    if (loading && allFarmers.length === 0) {
         return (
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -162,7 +215,7 @@ const FarmersPage: React.FC = () => {
                 <div>
                     <h1 className="text-3xl font-bold">Farmers Management</h1>
                     <p className="text-muted-foreground">
-                        Manage {totalFarmers} registered farmers
+                        Managing {totalFarmers} registered farmers
                     </p>
                 </div>
                 <Button onClick={() => navigate('/admin/farmers/new')}>
@@ -177,10 +230,13 @@ const FarmersPage: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <CardTitle>All Farmers</CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                                {searchTerm ? `Found ${filteredFarmers.length} farmers matching "${searchTerm}"` : ''}
+                            </p>
                         </div>
                         <form onSubmit={handleSearch} className="flex gap-2">
                             <Input
-                                placeholder="Search farmers by name or email..."
+                                placeholder="Search by name, email, location, or phone..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full sm:w-64"
@@ -206,7 +262,7 @@ const FarmersPage: React.FC = () => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {farmers.length === 0 ? (
+                                {paginatedFarmers.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                                             <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -217,7 +273,7 @@ const FarmersPage: React.FC = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    farmers.map((farmer) => (
+                                    paginatedFarmers.map((farmer) => (
                                         <TableRow key={farmer.id}>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
@@ -238,8 +294,9 @@ const FarmersPage: React.FC = () => {
                                                 {farmer.profile?.contactInfo ? (
                                                     <a
                                                         href={`tel:${farmer.profile.contactInfo}`}
-                                                        className="text-blue-600 hover:underline"
+                                                        className="text-blue-600 hover:underline flex items-center gap-1"
                                                     >
+                                                        <Phone className="h-3 w-3" />
                                                         {farmer.profile.contactInfo}
                                                     </a>
                                                 ) : (
@@ -247,36 +304,41 @@ const FarmersPage: React.FC = () => {
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                {farmer.profile?.location || (
+                                                {farmer.profile?.location ? (
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="h-3 w-3" />
+                                                        {farmer.profile.location}
+                                                    </span>
+                                                ) : (
                                                     <span className="text-muted-foreground">Not specified</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">
+                                                <Badge variant="outline" className="flex items-center gap-1">
+                                                    <Crop className="h-3 w-3" />
                                                     {farmer._count.crops} crops
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                {formatDate(farmer.createdAt)}
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    {formatDate(farmer.createdAt)}
+                                                </span>
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" size="sm">
-                                                            <Ellipsis className='h-5 w-5'/>
+                                                            <Ellipsis className='h-5 w-5' />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem
-                                                            onClick={() => navigate(`/admin/farmers/${farmer.id}`)}
-                                                        >
+                                                        <DropdownMenuItem onClick={() => handleViewDetails(farmer)}>
                                                             <Eye className="h-4 w-4 mr-2" />
                                                             View Details
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => navigate(`/admin/farmers/${farmer.id}/edit`)}
-                                                        >
+                                                        <DropdownMenuItem onClick={() => navigate(`/admin/farmers/${farmer.id}/edit`)}>
                                                             <Edit className="h-4 w-4 mr-2" />
                                                             Edit Farmer
                                                         </DropdownMenuItem>
@@ -298,11 +360,11 @@ const FarmersPage: React.FC = () => {
                     </div>
 
                     {/* Pagination */}
-                    {farmers.length > 0 && (
+                    {filteredFarmers.length > 0 && (
                         <div className="flex items-center justify-between pt-4">
                             <div className="text-sm text-muted-foreground">
                                 Showing {(currentPage - 1) * 10 + 1} to{' '}
-                                {Math.min(currentPage * 10, totalFarmers)} of {totalFarmers} farmers
+                                {Math.min(currentPage * 10, filteredFarmers.length)} of {filteredFarmers.length} farmers
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -359,6 +421,84 @@ const FarmersPage: React.FC = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* View Farmer Details Dialog */}
+            <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Farmer Details</DialogTitle>
+                        <DialogDescription>
+                            Detailed information about {selectedFarmer?.profile?.fullName || 'the farmer'}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {selectedFarmer && (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                                    <User className="h-8 w-8 text-green-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold">
+                                        {selectedFarmer.profile?.fullName || 'Unknown Farmer'}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                        <Mail className="h-3 w-3" />
+                                        {selectedFarmer.email}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium">Contact Info</p>
+                                    <p className="text-sm flex items-center gap-1">
+                                        <Phone className="h-3 w-3" />
+                                        {selectedFarmer.profile?.contactInfo || 'Not provided'}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium">Location</p>
+                                    <p className="text-sm flex items-center gap-1">
+                                        <MapPin className="h-3 w-3" />
+                                        {selectedFarmer.profile?.location || 'Not specified'}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium">Total Crops</p>
+                                    <Badge variant="outline" className="flex items-center gap-1">
+                                        <Crop className="h-3 w-3" />
+                                        {selectedFarmer._count.crops} crops
+                                    </Badge>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium">Member Since</p>
+                                    <p className="text-sm flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        {formatDateTime(selectedFarmer.createdAt)}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => navigate(`/admin/farmers/${selectedFarmer.id}/edit`)}
+                                >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit Farmer
+                                </Button>
+                                <Button onClick={() => setViewDialogOpen(false)}>
+                                    Close
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
