@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import { Toaster } from "@/components/ui/sonner"
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; admin?: boolean }> = ({
   children,
@@ -49,6 +50,7 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
+      <Toaster />
       <AuthProvider>
         <div className="min-h-screen bg-background">
           <AppRoutes />

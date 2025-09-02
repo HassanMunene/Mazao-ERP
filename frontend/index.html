@@ -46,13 +46,6 @@
   <meta name="theme-color" content="#16a34a" />
   <meta name="msapplication-TileColor" content="#16a34a" />
 
-  <!-- Security Headers (some will be added via server config) -->
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-
   <!-- Preload critical resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,27 +66,6 @@
   </noscript>
 
   <script type="module" src="/src/main.tsx"></script>
-
-  <!-- Performance monitoring (optional - add your analytics here) -->
-  <script>
-    // Example: Google Analytics
-    if (window.location.hostname !== 'localhost') {
-      // Add your analytics code here
-    }
-
-    // Service Worker registration for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
-  </script>
 </body>
 
 </html>
