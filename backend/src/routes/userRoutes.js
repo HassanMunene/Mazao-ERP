@@ -1,15 +1,32 @@
 import express from 'express';
 import { getUsers, getUserById, updateUser, deleteUser, getUserCount } from '../controllers/userController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+import { protect, admin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Apply protect and admin middleware to all routes
-router.use(protect);
-router.use(admin); // Makes the entire route admin-only
+// @route   GET /api/users
+// @desc    Get all users with pagination and filtering
+// @access  Private/Admin
+router.get('/', protect, admin, getUsers);
 
-router.route('/').get(getUsers);
-router.route('/stats/count').get(getUserCount);
-router.route('/:id').get(getUserById).put(updateUser).delete(deleteUser);
+// @route   GET /api/users/stats/count
+// @desc    Get user statistics and counts
+// @access  Private/Admin
+router.get('/stats/count', protect, admin, getUserCount);
+
+// @route   GET /api/users/:id
+// @desc    Get user by ID
+// @access  Private/Admin
+router.get('/:id', protect, admin, getUserById);
+
+// @route   PUT /api/users/:id
+// @desc    Update user by ID
+// @access  Private/Admin
+router.put('/:id', protect, admin, updateUser);
+
+// @route   DELETE /api/users/:id
+// @desc    Delete user by ID
+// @access  Private/Admin
+router.delete('/:id', protect, admin, deleteUser);
 
 export default router;

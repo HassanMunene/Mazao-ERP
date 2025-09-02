@@ -31,6 +31,7 @@ export const admin = (req, res, next) => {
     if (req.user && req.user.role === 'ADMIN') {
         next();
     } else {
-        req.status(403).json({ message: 'Access denied. Admin rights required.' });
+        res.status(403).json({ message: 'Access denied. Admin rights required.' });
     }
 };
+
