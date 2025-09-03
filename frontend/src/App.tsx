@@ -5,7 +5,6 @@ import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import Unauthorized from './pages/Unauthorized';
 import { Toaster } from "@/components/ui/sonner";
@@ -24,6 +23,10 @@ import AddCropPage from './pages/Admin/AddCropPage';
 import CropDetailPage from './pages/Admin/CropDetailPage';
 import EditCropPage from './pages/Admin/EditCropPage';
 import ProfilePage from './pages/ProfilePage';
+
+import { FarmerLayout } from './components/layout/FarmerLayout';
+import FarmerDashboard from './pages/Farmer/FarmerDashboard';
+import CropList from './pages/Farmer/CropList';
 
 // Handle Role based redirects after login
 const RoleBasedRedirect = () => {
@@ -65,13 +68,12 @@ function AppRoutes() {
 
 			{/* Protected user routes */}
 			<Route
-				path="/dashboard"
-				element={
-					<ProtectedRoute requiredRoles={['FARMER', 'ADMIN']}>
-						<Dashboard />
-					</ProtectedRoute>
-				}
-			/>
+				path="/dashboard/*"
+				element={<ProtectedRoute requiredRoles={['FARMER', 'ADMIN']}><FarmerLayout /></ProtectedRoute>}
+			>
+				<Route index element={<FarmerDashboard />} />
+				<Route path="crops" element={<CropList />} />
+			</Route>
 
 			{/* Admin routes */}
 			<Route

@@ -3,9 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
-    LayoutDashboard, Users, Sprout,
-    Shield, Settings, LogOut, User, X, Plus,
-    ChevronDown, Leaf
+    LayoutDashboard, User, LogOut, X,
+    ChevronDown, Leaf, Sprout, Plus
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -43,7 +42,7 @@ interface SidebarItemProps {
     isTemporarilyExpanded?: boolean;
 }
 
-// Memoized sidebar item component
+// Memoized sidebar item component (same as AdminSidebar)
 const SidebarItemComponent = memo(({
     item,
     isActive,
@@ -203,8 +202,8 @@ const SidebarItemComponent = memo(({
 
 SidebarItemComponent.displayName = 'SidebarItemComponent';
 
-// Main sidebar component
-export function AdminSidebar({
+// Main sidebar component for Farmer
+export function FarmerSidebar({
     className,
     isCollapsed,
     isMobileOpen = false,
@@ -217,30 +216,13 @@ export function AdminSidebar({
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
     const [isTemporarilyExpanded, setIsTemporarilyExpanded] = useState(false);
 
-    // Generate Mazao-specific sidebar items
+    // Generate Farmer-specific sidebar items
     const sidebarItems: SidebarItem[] = useMemo(() => [
         {
             id: 'dashboard',
             title: 'Dashboard',
-            href: '/admin',
+            href: '/dashboard',
             icon: LayoutDashboard,
-        },
-        {
-            id: 'section-farmers',
-            title: 'Farmer Management',
-            isSectionHeader: true,
-            href: '#',
-            icon: Users,
-        },
-        {
-            id: 'farmers',
-            title: 'Farmers',
-            href: '/admin/farmers',
-            icon: Users,
-            children: [
-                { id: 'all-farmers', title: 'All Farmers', href: '/admin/farmers', icon: Users },
-                { id: 'new-farmers', title: 'New Farmers', href: '/admin/farmers/new', icon: User },
-            ],
         },
         {
             id: 'section-crops',
@@ -251,30 +233,26 @@ export function AdminSidebar({
         },
         {
             id: 'crops',
-            title: 'Crops',
-            href: '/admin/crops',
+            title: 'My Crops',
+            href: '/dashboard/crops',
             icon: Sprout,
             children: [
-                { id: 'all-crops', title: 'All Crops', href: '/admin/crops', icon: Sprout },
-                { id: 'add-crop', title: 'Add Crop', href: '/admin/crops/new', icon: Plus },
+                { id: 'all-crops', title: 'View All Crops', href: '/dashboard/crops', icon: Sprout },
+                { id: 'add-crop', title: 'Add New Crop', href: '/dashboard/crops/new', icon: Plus },
             ],
         },
         {
-            id: 'section-admin',
-            title: 'Administration',
+            id: 'section-profile',
+            title: 'Profile Management',
             isSectionHeader: true,
             href: '#',
-            icon: Shield,
+            icon: User,
         },
         {
-            id: 'system',
-            title: 'System Settings',
-            href: '/admin/settings',
-            icon: Settings,
-            children: [
-                { id: 'users', title: 'User Management', href: '/admin/settings/users', icon: Users },
-                { id: 'system-settings', title: 'Profile Management', href: '/admin/profile', icon: Settings },
-            ],
+            id: 'profile',
+            title: 'My Profile',
+            href: '/farmer/profile',
+            icon: User,
         },
     ], []);
 
@@ -455,7 +433,7 @@ export function AdminSidebar({
                                 </div>
                                 <div>
                                     <h1 className="text-lg font-semibold">Mazao ERP</h1>
-                                    <p className="text-xs text-muted-foreground">Admin Portal</p>
+                                    <p className="text-xs text-muted-foreground">Farmer Portal</p>
                                 </div>
                             </div>
                         </Link>
@@ -512,10 +490,10 @@ export function AdminSidebar({
                             {(!isCollapsed || isTemporarilyExpanded) && (
                                 <div className="flex-1 overflow-hidden">
                                     <p className="text-sm font-medium truncate">
-                                        {user?.profile?.fullName || 'Admin User'}
+                                        {user?.profile?.fullName || 'Farmer User'}
                                     </p>
                                     <p className="text-xs text-muted-foreground truncate">
-                                        {user?.email || 'admin@mazao.com'}
+                                        {user?.email || 'farmer@mazao.com'}
                                     </p>
                                 </div>
                             )}

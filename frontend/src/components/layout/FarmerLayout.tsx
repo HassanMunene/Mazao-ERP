@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { AdminSidebar } from './AdminSidebar';
-import { AdminHeader } from './AdminHeader';
+import { FarmerSidebar } from './FarmerSidebar';
+import { FarmerHeader } from './FarmerHeader';
 
-export function AdminLayout() {
+export function FarmerLayout() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -22,7 +22,7 @@ export function AdminLayout() {
 
     return (
         <div className="flex h-screen bg-background">
-            <AdminSidebar
+            <FarmerSidebar
                 isCollapsed={isSidebarCollapsed}
                 onToggleCollapse={handleSidebarToggle}
                 isMobileOpen={isMobileMenuOpen}
@@ -30,7 +30,7 @@ export function AdminLayout() {
             />
 
             <div className="flex-1 flex flex-col overflow-hidden">
-                <AdminHeader
+                <FarmerHeader
                     onMenuToggle={handleMobileMenuToggle}
                     showMobileMenu={isMobileMenuOpen}
                     onSearch={handleSearch}
