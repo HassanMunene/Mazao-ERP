@@ -130,7 +130,7 @@ export function FarmerHeader({
                         )}
                     </button>
 
-                    <h1 className="text-xl font-semibold text-green-800">
+                    <h1 className="text-xl font-semibold">
                         {user?.profile?.fullName}
                     </h1>
                 </div>
@@ -210,11 +210,11 @@ export function FarmerHeader({
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigate('/admin/profile')}>
+                            <DropdownMenuItem onClick={() => navigate('/dashboard/profile')}>
                                 <User className="mr-2 h-4 w-4" />
                                 <span>Profile</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
+                            <DropdownMenuItem onClick={() => navigate('/dashboard/profile')}>
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Settings</span>
                             </DropdownMenuItem>

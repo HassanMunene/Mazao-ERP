@@ -150,7 +150,7 @@ export default function ProfilePage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-green-900">Profile Settings</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Profile Settings</h1>
                     <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
                         Manage your account settings and profile information
                     </p>

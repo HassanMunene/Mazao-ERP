@@ -130,7 +130,7 @@ export function AdminHeader({
                         )}
                     </button>
 
-                    <h1 className="text-xl font-semibold text-green-800">
+                    <h1 className="text-xl font-semibold">
                         {user?.profile?.fullName}
                     </h1>
                 </div>

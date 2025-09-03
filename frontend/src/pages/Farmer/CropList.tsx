@@ -14,14 +14,16 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-    Plus, Search, Eye, Edit, Trash2,
+    Plus, Search, Eye, Edit, Trash2, Loader2,
     Sprout, Filter, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import CropDetailModal from '@/components/dashboard/crops/CropDetailsModal';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { DeleteConfirmationDialog } from '@/components/dashboard/DeleteConfirmationDialog';
+import { toast } from 'sonner';
 
-const ActionIcons = ({ crop, onView, onEdit, onDelete }: any) => {
+const ActionIcons = ({ crop, onView, onEdit, onDelete, isDeleting }: any) => {
     return (
         <div className="flex justify-end gap-2">
             {/* View Icon */}
@@ -66,8 +68,13 @@ const ActionIcons = ({ crop, onView, onEdit, onDelete }: any) => {
                         size="icon"
                         className="h-8 w-8 text-red-600 hover:text-red-800 hover:bg-red-100"
                         onClick={() => onDelete(crop)}
+                        disabled={isDeleting}
                     >
-                        <Trash2 className="h-4 w-4" />
+                        {isDeleting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Trash2 className="h-4 w-4" />
+                        )}
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -80,7 +87,17 @@ const ActionIcons = ({ crop, onView, onEdit, onDelete }: any) => {
 
 const CropList = () => {
     const navigate = useNavigate();
-    const [crops, setCrops] = useState([]);
+    type Crop = {
+        id: string;
+        name: string;
+        type: string;
+        description?: string;
+        quantity: number;
+        status: string;
+        plantingDate: string;
+    };
+
+    const [crops, setCrops] = useState<Crop[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('');
@@ -92,14 +109,21 @@ const CropList = () => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [editCropId, setEditCropId] = useState<string | null>(null);
 
+    // Delete dialog state
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [cropToDelete, setCropToDelete] = useState<Crop | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     useEffect(() => {
         fetchCrops();
-    }, []); // Removed dependencies to fetch only once
+    }, []);
+
+    console.log(totalPages, editCropId)
 
     const fetchCrops = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/crops?limit=1000'); // Get all crops at once
+            const response = await api.get('/crops?limit=1000');
 
             if (response.data.success) {
                 setCrops(response.data.data.crops);
@@ -108,19 +132,34 @@ const CropList = () => {
             }
         } catch (error) {
             console.error('Error fetching crops:', error);
+            toast.error('Failed to fetch crops');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (cropId) => {
-        if (!window.confirm('Are you sure you want to delete this crop?')) return;
+    const handleDeleteClick = (crop: Crop) => {
+        setCropToDelete(crop);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!cropToDelete) return;
 
         try {
-            await api.delete(`/crops/${cropId}`);
+            setIsDeleting(true);
+            await api.delete(`/crops/${cropToDelete.id}`);
+
+            toast.success(`Crop "${cropToDelete.name}" deleted successfully`);
             fetchCrops(); // Refresh the list
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting crop:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to delete crop';
+            toast.error(errorMessage);
+        } finally {
+            setIsDeleting(false);
+            setDeleteDialogOpen(false);
+            setCropToDelete(null);
         }
     };
 
@@ -154,13 +193,16 @@ const CropList = () => {
         currentPage * itemsPerPage
     );
 
-    const getStatusBadge = (status) => {
-        const statusConfig = {
+    const getStatusBadge = (status: string) => {
+        const statusConfig: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
             PLANTED: { variant: 'default', label: 'Planted' },
-            HARVESTED: { variant: 'success', label: 'Harvested' },
             SOLD: { variant: 'secondary', label: 'Sold' },
             FAILED: { variant: 'destructive', label: 'Failed' }
         };
+
+        if (status === "HARVESTED") {
+            return <Badge variant="default">Harvested</Badge>;
+        }
 
         const config = statusConfig[status] || { variant: 'secondary', label: status };
         return <Badge variant={config.variant}>{config.label}</Badge>;
@@ -187,7 +229,7 @@ const CropList = () => {
                     </p>
                 </div>
                 <Button asChild>
-                    <Link to="/farmer/crops/new">
+                    <Link to="/dashboard/crops/new">
                         <Plus className="h-4 w-4 mr-2" />
                         Add New Crop
                     </Link>
@@ -377,7 +419,8 @@ const CropList = () => {
                                                 crop={crop}
                                                 onView={handleView}
                                                 onEdit={handleEdit}
-                                                onDelete={handleDelete}
+                                                onDelete={handleDeleteClick}
+                                                isDeleting={isDeleting && cropToDelete?.id === crop.id}
                                             />
                                         </TableCell>
                                     </TableRow>
@@ -418,11 +461,23 @@ const CropList = () => {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Modals */}
             <CropDetailModal
                 cropId={selectedCropId}
                 open={isDetailModalOpen}
                 onOpenChange={setIsDetailModalOpen}
                 onEdit={setEditCropId}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <DeleteConfirmationDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isLoading={isDeleting}
+                title="Delete Crop"
+                description={`Are you sure you want to delete "${cropToDelete?.name}"? This action cannot be undone.`}
             />
         </div>
     );
