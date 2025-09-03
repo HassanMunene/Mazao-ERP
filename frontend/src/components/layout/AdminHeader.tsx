@@ -1,7 +1,7 @@
-import { useState, useMemo, memo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Bell, Search, Settings, User, LogOut,
+    Search, Settings, User, LogOut,
     Sun, Moon, X, Menu, PanelRightOpen, PanelRightClose
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/lib/theme-provider';
 import { useAuth } from '@/context/AuthContext';
@@ -31,49 +30,6 @@ interface HeaderProps {
     onSidebarToggle?: () => void;
     showSidebarToggle?: boolean;
 }
-
-// Notification item component
-const NotificationItem = memo(({ notification }: {
-    notification: {
-        id: string;
-        title: string;
-        description: string;
-        time: string;
-        type: 'info' | 'warning' | 'success';
-    };
-}) => {
-    const getNotificationIcon = (type: string) => {
-        switch (type) {
-            case 'warning':
-                return <Bell className="h-4 w-4 text-yellow-500" />;
-            case 'success':
-                return <Bell className="h-4 w-4 text-green-500" />;
-            default:
-                return <Bell className="h-4 w-4 text-blue-500" />;
-        }
-    };
-
-    return (
-        <div className="flex items-start space-x-3 p-3 rounded-lg transition-colors hover:bg-accent cursor-pointer">
-            <div className="flex-shrink-0 mt-0.5">
-                {getNotificationIcon(notification.type)}
-            </div>
-            <div className="flex-1 space-y-1 min-w-0">
-                <p className="text-sm font-medium leading-none truncate">
-                    {notification.title}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                    {notification.description}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                    {notification.time}
-                </p>
-            </div>
-        </div>
-    );
-});
-
-NotificationItem.displayName = 'NotificationItem';
 
 // Main header component
 export function AdminHeader({
@@ -102,31 +58,6 @@ export function AdminHeader({
         setIsLogoutDialogOpen(false);
     }, [logout]);
 
-
-    // Sample notifications for Mazao ERP
-    const notifications = useMemo(() => [
-        {
-            id: '1',
-            title: 'New Farmer Registration',
-            description: '5 new farmers registered today',
-            time: '2 hours ago',
-            type: 'success' as const
-        },
-        {
-            id: '2',
-            title: 'Harvest Alert',
-            description: 'Maize ready for harvest in Nakuru',
-            time: '5 hours ago',
-            type: 'info' as const
-        },
-        {
-            id: '3',
-            title: 'Low Inventory',
-            description: 'Fertilizer stock running low',
-            time: '1 day ago',
-            type: 'warning' as const
-        }
-    ], []);
 
     // Debounced search
     const handleSearchChange = useCallback((query: string) => {
@@ -254,42 +185,6 @@ export function AdminHeader({
                             <Moon className="h-5 w-5" />
                         )}
                     </Button>
-
-                    {/* Notifications */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="relative">
-                                <Bell className="h-5 w-5" />
-                                <Badge
-                                    variant="destructive"
-                                    className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                                >
-                                    {notifications.length}
-                                </Badge>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-80 p-0" align="end">
-                            <div className="flex items-center justify-between p-4 border-b">
-                                <h3 className="font-semibold">Notifications</h3>
-                                <Badge variant="secondary">{notifications.length} New</Badge>
-                            </div>
-
-                            <div className="max-h-96 overflow-y-auto">
-                                {notifications.map(notification => (
-                                    <NotificationItem
-                                        key={notification.id}
-                                        notification={notification}
-                                    />
-                                ))}
-                            </div>
-
-                            <div className="p-2 border-t">
-                                <Button variant="ghost" className="w-full">
-                                    View all notifications
-                                </Button>
-                            </div>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
 
                     {/* User Menu */}
                     <DropdownMenu>

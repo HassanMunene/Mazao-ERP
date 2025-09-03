@@ -40,9 +40,6 @@ const AdminDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-                    <p className="text-muted-foreground">
-                        Overview of your Agricultural Management System
-                    </p>
                 </div>
                 <Button onClick={refetch} variant="outline" disabled={loading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />

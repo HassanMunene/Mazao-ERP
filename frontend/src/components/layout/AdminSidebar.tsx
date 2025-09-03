@@ -248,24 +248,6 @@ export function AdminSidebar({
             ],
         },
         {
-            id: 'section-analytics',
-            title: 'Analytics & Reports',
-            isSectionHeader: true,
-            href: '#',
-            icon: BarChart3,
-        },
-        {
-            id: 'analytics',
-            title: 'Analytics',
-            href: '/admin/analytics',
-            icon: BarChart3,
-            children: [
-                { id: 'yield-reports', title: 'Yield Reports', href: '/admin/analytics/yield', icon: BarChart3 },
-                { id: 'financial-reports', title: 'Financial Reports', href: '/admin/analytics/financial', icon: FileText },
-                { id: 'regional-data', title: 'Regional Data', href: '/admin/analytics/regional', icon: MapPin },
-            ],
-        },
-        {
             id: 'section-admin',
             title: 'Administration',
             isSectionHeader: true,
