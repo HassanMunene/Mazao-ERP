@@ -272,7 +272,6 @@ export function AdminSidebar({
             href: '/admin/settings',
             icon: Settings,
             children: [
-                { id: 'users', title: 'User Management', href: '/admin/settings/users', icon: Users },
                 { id: 'system-settings', title: 'Profile Management', href: '/admin/profile', icon: Settings },
             ],
         },

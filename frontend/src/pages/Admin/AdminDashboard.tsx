@@ -74,7 +74,7 @@ const AdminDashboard: React.FC = () => {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Crops per Farmer Chart */}
-                <div className="bg-white border rounded-lg p-6">
+                <div className="border rounded-lg p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold text-lg">Crops per Farmer</h3>
                         <BarChart3 className="h-5 w-5 text-muted-foreground" />
@@ -83,31 +83,27 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* Region Distribution Pie Chart */}
-                <div className="bg-white border rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-lg">Region Distribution</h3>
-                        <Grid3X3 className="h-5 w-5 text-muted-foreground" />
-                    </div>
+                <div className="border rounded-lg p-6">
                     <RegionPieChart data={regionDistribution} loading={loading} />
                 </div>
             </div>
 
             {/* Region Details Table */}
-            <div className="bg-white border rounded-lg p-6">
+            <div className="border rounded-lg p-6">
                 <h3 className="font-semibold text-lg mb-4">Region Details</h3>
                 {loading ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="text-center">
-                                <div className="h-6 w-16 bg-gray-200 rounded animate-pulse mx-auto mb-2"></div>
-                                <div className="h-4 w-8 bg-gray-200 rounded animate-pulse mx-auto"></div>
+                                <div className="h-6 w-16 rounded animate-pulse mx-auto mb-2"></div>
+                                <div className="h-4 w-8 rounded animate-pulse mx-auto"></div>
                             </div>
                         ))}
                     </div>
                 ) : regionDistribution.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {regionDistribution.slice(0, 8).map((region, index) => (
-                            <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div key={index} className="text-center p-3 rounded-lg">
                                 <h4 className="font-semibold text-sm mb-1">{region.region}</h4>
                                 <p className="text-2xl font-bold text-green-600">{region.farmerCount}</p>
                                 <p className="text-xs text-muted-foreground">farmers</p>
