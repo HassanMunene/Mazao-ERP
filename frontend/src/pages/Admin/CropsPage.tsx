@@ -19,13 +19,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -35,6 +28,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Crop {
     id: string;
@@ -69,6 +63,63 @@ interface CropsResponse {
         };
     };
 }
+
+const ActionIcons = ({ crop, onView, onEdit, onDelete }: any) => {
+    return (
+        <div className="flex justify-end gap-2">
+            {/* View Icon */}
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                        onClick={() => onView(crop.id)}
+                    >
+                        <Eye className="h-4 w-4" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>View Details</p>
+                </TooltipContent>
+            </Tooltip>
+
+            {/* Edit Icon */}
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-100"
+                        onClick={() => onEdit(crop.id)}
+                    >
+                        <Edit className="h-4 w-4" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Edit Crop</p>
+                </TooltipContent>
+            </Tooltip>
+
+            {/* Delete Icon */}
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-600 hover:text-red-800 hover:bg-red-100"
+                        onClick={() => onDelete(crop)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Delete Crop</p>
+                </TooltipContent>
+            </Tooltip>
+        </div>
+    );
+};
 
 const CropsPage: React.FC = () => {
     const navigate = useNavigate();
@@ -113,6 +164,14 @@ const CropsPage: React.FC = () => {
     const handleDeleteClick = (crop: Crop) => {
         setCropToDelete(crop);
         setDeleteDialogOpen(true);
+    };
+
+    const handleView = (id: string) => {
+        navigate(`/admin/crops/${id}`);
+    };
+
+    const handleEdit = (id: string) => {
+        navigate(`/admin/crops/${id}/edit`);
     };
 
     const handleDeleteConfirm = async () => {
@@ -303,35 +362,12 @@ const CropsPage: React.FC = () => {
                                                 {formatDate(crop.plantingDate)}
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="sm">
-                                                            Actions
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem
-                                                            onClick={() => navigate(`/admin/crops/${crop.id}`)}
-                                                        >
-                                                            <Eye className="h-4 w-4 mr-2" />
-                                                            View Details
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => navigate(`/admin/crops/${crop.id}/edit`)}
-                                                        >
-                                                            <Edit className="h-4 w-4 mr-2" />
-                                                            Edit Crop
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            className="text-red-600"
-                                                            onClick={() => handleDeleteClick(crop)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 mr-2" />
-                                                            Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <ActionIcons
+                                                    crop={crop}
+                                                    onView={handleView}
+                                                    onEdit={handleEdit}
+                                                    onDelete={handleDeleteClick}
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     ))

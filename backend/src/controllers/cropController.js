@@ -262,22 +262,10 @@ export const updateCrop = asyncHandler(async (req, res) => {
             throw new Error('Not authorized to update this crop');
         }
 
-        // Validate crop type if provided
-        if (type && !Object.values(prisma.CropType).includes(type)) {
-            res.status(400);
-            throw new Error('Invalid crop type');
-        }
-
         // Validate quantity if provided
         if (quantity && quantity <= 0) {
             res.status(400);
             throw new Error('Quantity must be greater than 0');
-        }
-
-        // Validate status if provided
-        if (status && !Object.values(prisma.CropStatus).includes(status)) {
-            res.status(400);
-            throw new Error('Invalid crop status');
         }
 
         const updatedCrop = await prisma.crop.update({

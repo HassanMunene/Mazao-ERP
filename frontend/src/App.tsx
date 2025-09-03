@@ -10,6 +10,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import Unauthorized from './pages/Unauthorized';
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from './lib/theme-provider';
+import { TooltipProvider } from './components/ui/tooltip';
 
 import { AdminLayout } from './components/layout/AdminLayout';
 import FarmersPage from './pages/Admin/FarmersPage';
@@ -21,6 +22,8 @@ import EditFarmerPage from './pages/Admin/EditFarmerPage';
 
 import AddCropPage from './pages/Admin/AddCropPage';
 import CropDetailPage from './pages/Admin/CropDetailPage';
+import EditCropPage from './pages/Admin/EditCropPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Handle Role based redirects after login
 const RoleBasedRedirect = () => {
@@ -85,8 +88,10 @@ function AppRoutes() {
 				<Route path="crops" element={<CropsPage />} />
 				<Route path="crops/new" element={<AddCropPage />} />
 				<Route path="crops/:id" element={<CropDetailPage />} />
+				<Route path="crops/:id/edit" element={<EditCropPage />} />
 
-				{/* <Route path="crops/:id/edit" element={<EditCropPage />} /> */}
+				<Route path="profile" element={<ProfilePage />} />
+
 			</Route>
 
 			{/* Catch all route */}
@@ -98,14 +103,16 @@ function AppRoutes() {
 function App() {
 	return (
 		<Router>
-			<ThemeProvider>
-				<Toaster />
-				<AuthProvider>
-					<div className="min-h-screen bg-background">
-						<AppRoutes />
-					</div>
-				</AuthProvider>
-			</ThemeProvider>
+			<TooltipProvider>
+				<ThemeProvider>
+					<Toaster />
+					<AuthProvider>
+						<div className="min-h-screen bg-background">
+							<AppRoutes />
+						</div>
+					</AuthProvider>
+				</ThemeProvider>
+			</TooltipProvider>
 		</Router>
 	);
 }

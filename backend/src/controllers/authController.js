@@ -120,7 +120,9 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
 });
 
-
+// @desc    get me details
+// @route   GET /api/auth/me
+// @access  PRIVATE
 export const getMe = asyncHandler(async (req, res) => {
     try {
         // req.user is set by the auth middleware
@@ -144,7 +146,7 @@ export const getMe = asyncHandler(async (req, res) => {
 });
 
 // @desc    Logout user / clear cookie
-// @route   POST /api/auth/logout
+// @route   GET /api/auth/logout
 // @access  Public
 export const logoutUser = asyncHandler(async (req, res) => {
     try {

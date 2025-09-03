@@ -297,7 +297,7 @@ export function AdminSidebar({
             icon: Settings,
             children: [
                 { id: 'users', title: 'User Management', href: '/admin/settings/users', icon: Users },
-                { id: 'system-settings', title: 'System Config', href: '/admin/settings/system', icon: Settings },
+                { id: 'system-settings', title: 'Profile Management', href: '/admin/profile', icon: Settings },
                 { id: 'audit-logs', title: 'Audit Logs', href: '/admin/settings/audit', icon: FileText },
             ],
         },
