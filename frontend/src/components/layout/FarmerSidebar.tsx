@@ -251,7 +251,7 @@ export function FarmerSidebar({
         {
             id: 'profile',
             title: 'My Profile',
-            href: '/farmer/profile',
+            href: '/dashboard/profile',
             icon: User,
         },
     ], []);

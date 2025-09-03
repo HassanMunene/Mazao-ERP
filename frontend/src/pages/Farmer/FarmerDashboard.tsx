@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import {
     Sprout, Plus, ArrowUpRight, Package,
-    TrendingUp, AlertTriangle, CheckCircle
+    TrendingUp, AlertTriangle, CheckCircle, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
@@ -94,6 +94,10 @@ const FarmerDashboard = () => {
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold">Dashboard</h1>
                     <Skeleton className="h-10 w-32" />
+                    <Button variant="outline" disabled={loading}>
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        Loading
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -136,7 +140,7 @@ const FarmerDashboard = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">Dashboard</h1>
                     <Button asChild>
-                        <Link to="/farmer/crops/new">
+                        <Link to="/crops/new">
                             <Plus className="h-4 w-4 mr-2" />
                             Add Crop
                         </Link>
@@ -163,12 +167,15 @@ const FarmerDashboard = () => {
                         Welcome back, {user?.profile?.fullName || 'Farmer'}
                     </p>
                 </div>
-                <Button asChild>
-                    <Link to="/farmer/crops/new">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Crop
-                    </Link>
-                </Button>
+                <div className='flex justify-between items-center'>
+                    <Button asChild>
+                        <Link to="/dashboard/crops/new">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Crop
+                        </Link>
+                    </Button>
+                </div>
+
             </div>
 
             {/* Stats Cards */}
@@ -288,7 +295,7 @@ const FarmerDashboard = () => {
                                         dataKey="totalQuantity"
                                         nameKey="type"
                                     >
-                                        {stats?.charts?.byType?.map((entry, index) => (
+                                        {stats?.charts?.byType?.map((_, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
@@ -307,7 +314,7 @@ const FarmerDashboard = () => {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Recent Crops</CardTitle>
                     <Button variant="outline" asChild>
-                        <Link to="/farmer/crops">
+                        <Link to="/dashboard/crops">
                             View All
                             <ArrowUpRight className="h-4 w-4 ml-2" />
                         </Link>

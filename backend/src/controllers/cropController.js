@@ -161,8 +161,6 @@ export const createCrop = asyncHandler(async (req, res) => {
             throw new Error('Name, type, quantity, and planting date are required');
         }
 
-        console.log("Yooooo");
-
         if (quantity <= 0) {
             res.status(400);
             throw new Error('Quantity must be greater than 0');

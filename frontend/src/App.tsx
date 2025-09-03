@@ -73,6 +73,9 @@ function AppRoutes() {
 			>
 				<Route index element={<FarmerDashboard />} />
 				<Route path="crops" element={<CropList />} />
+				<Route path="crops/new" element={<AddCropPage />} />
+				<Route path="crops/:id/edit" element={<EditCropPage />} />
+				<Route path="profile" element={<ProfilePage />} />
 			</Route>
 
 			{/* Admin routes */}

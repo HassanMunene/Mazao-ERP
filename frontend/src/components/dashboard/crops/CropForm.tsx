@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, ArrowLeft, Sprout, ChevronDown } from 'lucide-react';
+import { Loader2, ArrowLeft, Sprout, ChevronDown, User } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface CropFormData {
     name: string;
@@ -25,7 +26,7 @@ interface CropFormProps {
     cropId?: string;
 }
 
-// Custom Select component to avoid the key issue
+// Custom Select component
 const CustomSelect = ({
     label,
     name,
@@ -33,7 +34,8 @@ const CustomSelect = ({
     onChange,
     options,
     error,
-    placeholder
+    placeholder,
+    disabled = false
 }: {
     label: string;
     name: string;
@@ -42,6 +44,7 @@ const CustomSelect = ({
     options: Array<{ value: string, label: string }>;
     error?: string;
     placeholder?: string;
+    disabled?: boolean;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -51,15 +54,17 @@ const CustomSelect = ({
             <div className="relative">
                 <button
                     type="button"
-                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    onClick={() => setIsOpen(!isOpen)}
+                    className={`flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${disabled ? 'cursor-not-allowed opacity-50' : ''
+                        }`}
+                    onClick={() => !disabled && setIsOpen(!isOpen)}
+                    disabled={disabled}
                 >
                     {value ? options.find(opt => opt.value === value)?.label : placeholder}
-                    <ChevronDown className="h-4 w-4 opacity-50" />
+                    {!disabled && <ChevronDown className="h-4 w-4 opacity-50" />}
                 </button>
 
-                {isOpen && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                {isOpen && !disabled && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                         {options.map(option => (
                             <div
                                 key={option.value}
@@ -100,6 +105,7 @@ const CROP_STATUSES = [
 
 export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(mode === 'edit');
     const [errors, setErrors] = useState<Partial<Record<keyof CropFormData, string>>>({});
@@ -115,13 +121,25 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
         status: 'PLANTED'
     });
 
+    const isAdmin = user?.role === 'ADMIN';
+    const isFarmer = user?.role === 'FARMER';
+
     // Fetch crop data for edit mode and farmers for admin
     useEffect(() => {
         if (mode === 'edit' && cropId) {
             fetchCropData();
         }
-        fetchFarmers();
-    }, [mode, cropId]);
+
+        if (isAdmin) {
+            fetchFarmers();
+        } else if (isFarmer) {
+            // For farmers, automatically set their own ID
+            setFormData(prev => ({
+                ...prev,
+                farmerId: user.id
+            }));
+        }
+    }, [mode, cropId, isAdmin, isFarmer, user?.id]);
 
     const fetchCropData = async () => {
         try {
@@ -144,7 +162,7 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
         } catch (error: any) {
             console.error('Failed to fetch crop data:', error);
             toast('Failed to load crop data');
-            navigate('/admin/crops');
+            navigate(isAdmin ? '/admin/crops' : '/dashboard/crops');
         } finally {
             setFetching(false);
         }
@@ -153,12 +171,12 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
     const fetchFarmers = async () => {
         try {
             const response = await api.get('/users/farmers');
-
             if (response.data.success) {
-                setFarmers(response.data.data.farmers);
+                setFarmers(response.data.data.farmers || []);
             }
         } catch (error) {
             console.error('Failed to fetch farmers:', error);
+            toast('Failed to load farmers list');
         }
     };
 
@@ -205,7 +223,7 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
                 harvestDate: formData.harvestDate || undefined,
                 description: formData.description,
                 status: formData.status,
-                ...(formData.farmerId && { farmerId: formData.farmerId })
+                ...(isAdmin && formData.farmerId && { farmerId: formData.farmerId })
             };
 
             if (mode === 'create') {
@@ -216,10 +234,11 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
                 toast('Crop updated successfully');
             }
 
-            navigate('/admin/crops');
+            navigate(isAdmin ? '/admin/crops' : '/farmer/crops');
         } catch (error: any) {
             console.error('Failed to save crop:', error);
-            toast(`Failed to ${mode === 'create' ? 'create' : 'update'} crop`);
+            const errorMessage = error.response?.data?.message || `Failed to ${mode === 'create' ? 'create' : 'update'} crop`;
+            toast(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -257,7 +276,7 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
                 <div>
                     <Button
                         variant="ghost"
-                        onClick={() => navigate('/admin/crops')}
+                        onClick={() => navigate(isAdmin ? '/admin/crops' : '/farmer/crops')}
                         className="mb-4"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
@@ -378,18 +397,37 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
                                     />
                                 </div>
 
-                                {/* Farmer selection for admin */}
-                                <CustomSelect
-                                    label="Farmer (Optional)"
-                                    name="farmerId"
-                                    value={formData.farmerId || ''}
-                                    onChange={(value) => handleSelectChange('farmerId', value)}
-                                    options={farmers.map(farmer => ({
-                                        value: farmer.id,
-                                        label: farmer.profile?.fullName || farmer.email
-                                    }))}
-                                    placeholder="Select farmer (default: current user)"
-                                />
+                                {/* Farmer selection - only for admin */}
+                                {isAdmin && (
+                                    <CustomSelect
+                                        label="Farmer *"
+                                        name="farmerId"
+                                        value={formData.farmerId || ''}
+                                        onChange={(value) => handleSelectChange('farmerId', value)}
+                                        options={farmers.map(farmer => ({
+                                            value: farmer.id,
+                                            label: farmer.profile?.fullName || farmer.email
+                                        }))}
+                                        error={errors.farmerId}
+                                        placeholder="Select farmer"
+                                    />
+                                )}
+
+                                {/* Display farmer info for non-admin users */}
+                                {!isAdmin && user && (
+                                    <div className="space-y-2">
+                                        <Label>Farmer</Label>
+                                        <div className="flex items-center p-3 border rounded-md bg-muted/50">
+                                            <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                                            <span className="text-sm">
+                                                {user.profile?.fullName || user.email}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Crops are automatically assigned to your account
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -411,7 +449,7 @@ export const CropForm: React.FC<CropFormProps> = ({ mode, cropId }) => {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => navigate('/admin/crops')}
+                                onClick={() => navigate(isAdmin ? '/admin/crops' : '/dashboard/crops')}
                                 disabled={loading}
                             >
                                 Cancel
