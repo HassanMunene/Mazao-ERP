@@ -1,42 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
+    Dialog, DialogContent,
+    DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-    Edit,
-    Calendar,
-    Package,
-    User,
-    MapPin,
-    Phone,
-    Mail,
-    X,
-    AlertCircle,
-    Sprout
-} from 'lucide-react';
+import { Calendar, Package, User, MapPin, Phone, Mail, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
+import { formatDate } from '@/lib/utils';
 
 interface CropDetailModalProps {
     cropId: string | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onEdit: (cropId: string) => void;
+    onEdit?: (cropId: string) => void;
 }
 
-const CropDetailModal: React.FC<CropDetailModalProps> = ({
-    cropId,
-    open,
-    onOpenChange,
-    onEdit,
-}) => {
-    const [crop, setCrop] = useState(null);
+interface Crop {
+    id: string;
+    name: string;
+    type: string;
+    plantingDate: string;
+    harvestDate: string | null;
+    quantity: number;
+    farmerId: string;
+    description: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    farmer: {
+        id: string;
+        email: string;
+        role: string;
+        createdAt: string;
+        updatedAt: string;
+        profile: {
+            fullName: string;
+            location: string;
+            contactInfo: string;
+        };
+    };
+}
+
+const CropDetailModal = ({ cropId, open, onOpenChange }: CropDetailModalProps) => {
+    const [crop, setCrop] = useState<Crop | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -56,10 +62,10 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
         try {
             setLoading(true);
             setError('');
-            const response = await api.get(`/api/crops/${cropId}`);
+            const response = await api.get(`/crops/${cropId}`);
 
             if (response.data.success) {
-                setCrop(response.data);
+                setCrop(response.data.data);
             } else {
                 setError('Failed to load crop details');
             }
@@ -68,33 +74,6 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
             setError('Crop not found or you don\'t have access to it');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const getStatusBadge = (status) => {
-        const statusConfig = {
-            ACTIVE: { variant: 'default', label: 'Active' },
-            HARVESTED: { variant: 'success', label: 'Harvested' },
-            DORMANT: { variant: 'secondary', label: 'Dormant' },
-            FAILED: { variant: 'destructive', label: 'Failed' }
-        };
-
-        const config = statusConfig[status] || { variant: 'secondary', label: status };
-        return <Badge variant={config.variant}>{config.label}</Badge>;
-    };
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-
-    const handleEdit = () => {
-        if (cropId) {
-            onOpenChange(false);
-            onEdit(cropId);
         }
     };
 
@@ -108,40 +87,12 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
                             Detailed information about this crop
                         </DialogDescription>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onOpenChange(false)}
-                        className="h-8 w-8"
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
                 </DialogHeader>
 
                 {loading ? (
                     <div className="space-y-6 py-4">
                         <div className="flex items-center justify-between">
-                            <Skeleton className="h-8 w-48" />
-                            <Skeleton className="h-6 w-20" />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <div key={i} className="space-y-2">
-                                        <Skeleton className="h-4 w-20" />
-                                        <Skeleton className="h-6 w-32" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="space-y-4">
-                                {Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="space-y-2">
-                                        <Skeleton className="h-4 w-20" />
-                                        <Skeleton className="h-6 w-40" />
-                                    </div>
-                                ))}
-                            </div>
+                            <div>Loading Data...</div>
                         </div>
                     </div>
                 ) : error ? (
@@ -157,14 +108,7 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
                                 <h2 className="text-2xl font-bold">{crop.name}</h2>
-                                <p className="text-muted-foreground capitalize">{crop.type}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                {getStatusBadge(crop.status)}
-                                <Button size="sm" onClick={handleEdit}>
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit
-                                </Button>
+                                <p className="text-muted-foreground capitalize">{crop.type.toLowerCase()}</p>
                             </div>
                         </div>
 
@@ -178,7 +122,7 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
                                         <Package className="h-4 w-4 mr-2" />
                                         Quantity
                                     </div>
-                                    <p className="text-lg font-medium">{crop.quantity} units</p>
+                                    <p className="text-lg font-medium">{crop.quantity} kg</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -238,13 +182,13 @@ const CropDetailModal: React.FC<CropDetailModalProps> = ({
                                     </div>
                                 )}
 
-                                {crop.farmer?.profile?.contactInfo?.phone && (
+                                {crop.farmer?.profile?.contactInfo && (
                                     <div className="space-y-2">
                                         <div className="flex items-center text-sm text-muted-foreground">
                                             <Phone className="h-4 w-4 mr-2" />
-                                            Phone
+                                            Contact Info
                                         </div>
-                                        <p className="text-lg">{crop.farmer.profile.contactInfo.phone}</p>
+                                        <p className="text-lg">{crop.farmer.profile.contactInfo}</p>
                                     </div>
                                 )}
 

@@ -17,6 +17,7 @@ import {
     Sprout, Filter, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import CropDetailModal from '@/components/dashboard/crops/CropDetailsModal';
 
 const CropList = () => {
     const [crops, setCrops] = useState([]);
@@ -27,6 +28,9 @@ const CropList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCrops, setTotalCrops] = useState(0);
+    const [selectedCropId, setSelectedCropId] = useState<string | null>(null);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [editCropId, setEditCropId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchCrops();
@@ -308,11 +312,12 @@ const CropList = () => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link to={`/farmer/crops/${crop.id}`}>
-                                                            <Eye className="h-4 w-4 mr-2" />
-                                                            View Details
-                                                        </Link>
+                                                    <DropdownMenuItem onClick={() => {
+                                                        setSelectedCropId(crop.id);
+                                                        setIsDetailModalOpen(true);
+                                                    }}>
+                                                        <Eye className="h-4 w-4 mr-2" />
+                                                        View Details
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
                                                         <Link to={`/farmer/crops/${crop.id}/edit`}>
@@ -369,6 +374,12 @@ const CropList = () => {
                     )}
                 </CardContent>
             </Card>
+            <CropDetailModal
+                cropId={selectedCropId}
+                open={isDetailModalOpen}
+                onOpenChange={setIsDetailModalOpen}
+                onEdit={setEditCropId}
+            />
         </div>
     );
 };
