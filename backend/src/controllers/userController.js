@@ -93,6 +93,95 @@ export const getUsers = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get all farmers with pagination (Admin only)
+// @route   GET /api/users/farmers
+// @access  Private/Admin
+export const getFarmers = asyncHandler(async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 100;
+        const search = req.query.search;
+        const skip = (page - 1) * limit;
+
+        // Build where clause for filtering Only get farmers
+        let whereClause = {
+            role: 'FARMER'
+        };
+
+        if (search) {
+            whereClause.OR = [
+                {
+                    email: {
+                        contains: search,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    profile: {
+                        fullName: {
+                            contains: search,
+                            mode: 'insensitive'
+                        }
+                    }
+                }
+            ];
+        }
+
+        // Get farmers with pagination
+        const [farmers, totalFarmers] = await Promise.all([
+            prisma.user.findMany({
+                where: whereClause,
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    profile: true,
+                    _count: {
+                        select: {
+                            crops: true
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip: skip,
+                take: limit
+            }),
+            prisma.user.count({ where: whereClause })
+        ]);
+
+        const totalPages = Math.ceil(totalFarmers / limit);
+        const hasNextPage = page < totalPages;
+        const hasPrevPage = page > 1;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                farmers,
+                pagination: {
+                    currentPage: page,
+                    totalPages,
+                    totalFarmers,
+                    hasNextPage,
+                    hasPrevPage,
+                    limit
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Get farmers error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching farmers'
+        });
+    }
+});
+
+
 // @desc    Get user by ID
 // @route   GET /api/users/:id
 // @access  Private/Admin

@@ -161,10 +161,7 @@ export const createCrop = asyncHandler(async (req, res) => {
             throw new Error('Name, type, quantity, and planting date are required');
         }
 
-        if (!Object.values(prisma.CropType).includes(type)) {
-            res.status(400);
-            throw new Error('Invalid crop type');
-        }
+        console.log("Yooooo");
 
         if (quantity <= 0) {
             res.status(400);

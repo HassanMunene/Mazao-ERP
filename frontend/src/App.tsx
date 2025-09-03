@@ -19,6 +19,9 @@ import SettingsPage from './pages/Admin/SettingsPage';
 import AddFarmerPage from './pages/Admin/AddFarmerPage';
 import EditFarmerPage from './pages/Admin/EditFarmerPage';
 
+import AddCropPage from './pages/Admin/AddCropPage';
+import CropDetailPage from './pages/Admin/CropDetailPage';
+
 // Handle Role based redirects after login
 const RoleBasedRedirect = () => {
 	const { user } = useAuth();
@@ -70,19 +73,20 @@ function AppRoutes() {
 			{/* Admin routes */}
 			<Route
 				path="/admin/*"
-				element={
-					<AdminRoute>
-						<AdminLayout />
-					</AdminRoute>
-				}
+				element={<AdminRoute><AdminLayout /></AdminRoute>}
 			>
 				<Route index element={<AdminDashboard />} />
 				<Route path="farmers" element={<FarmersPage />} />
 				<Route path="farmers/new" element={<AddFarmerPage />} />
 				<Route path="farmers/:id/edit" element={<EditFarmerPage />} />
-				<Route path="crops" element={<CropsPage />} />
 				<Route path="analytics" element={<AnalyticsPage />} />
 				<Route path="settings" element={<SettingsPage />} />
+
+				<Route path="crops" element={<CropsPage />} />
+				<Route path="crops/new" element={<AddCropPage />} />
+				<Route path="crops/:id" element={<CropDetailPage />} />
+
+				{/* <Route path="crops/:id/edit" element={<EditCropPage />} /> */}
 			</Route>
 
 			{/* Catch all route */}

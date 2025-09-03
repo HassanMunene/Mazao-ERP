@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
     LayoutDashboard, Users, Sprout, BarChart3,
-    Shield, Settings, LogOut, User, X, Calendar,
+    Shield, Settings, LogOut, User, X, Plus,
     FileText, MapPin, Warehouse, Truck, ChevronDown, Leaf
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -227,7 +227,7 @@ export function AdminSidebar({
             icon: Users,
             children: [
                 { id: 'all-farmers', title: 'All Farmers', href: '/admin/farmers', icon: Users },
-                { id: 'new-farmers', title: 'New Farmers', href: '/admin/farmers/new', icon: User},
+                { id: 'new-farmers', title: 'New Farmers', href: '/admin/farmers/new', icon: User },
             ],
         },
         {
@@ -242,11 +242,9 @@ export function AdminSidebar({
             title: 'Crops',
             href: '/admin/crops',
             icon: Sprout,
-            badge: 8,
             children: [
                 { id: 'all-crops', title: 'All Crops', href: '/admin/crops', icon: Sprout },
-                { id: 'crop-types', title: 'Crop Types', href: '/admin/crops/types', icon: Sprout },
-                { id: 'harvest-schedule', title: 'Harvest Schedule', href: '/admin/crops/harvest', icon: Calendar },
+                { id: 'add-crop', title: 'Add Crop', href: '/admin/crops/new', icon: Plus },
             ],
         },
         {

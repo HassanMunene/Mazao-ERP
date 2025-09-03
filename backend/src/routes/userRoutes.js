@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, getUserById, updateUser, deleteUser, getUserCount, createFarmer } from '../controllers/userController.js';
+import { getUsers, getUserById, updateUser, deleteUser, getUserCount, createFarmer, getFarmers } from '../controllers/userController.js';
 import { protect, admin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -8,6 +8,11 @@ const router = express.Router();
 // @desc    Get all users with pagination and filtering
 // @access  Private/Admin
 router.get('/', protect, admin, getUsers);
+
+// @route   GET /api/users/farmers
+// @desc    Get all farmers
+// @access  Private/Admin
+router.get('/farmers', protect, admin, getFarmers);
 
 // @route   GET /api/users/stats/count
 // @desc    Get user statistics and counts
