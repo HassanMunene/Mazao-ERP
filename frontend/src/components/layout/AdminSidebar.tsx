@@ -266,24 +266,6 @@ export function AdminSidebar({
             ],
         },
         {
-            id: 'section-operations',
-            title: 'Operations',
-            isSectionHeader: true,
-            href: '#',
-            icon: Warehouse,
-        },
-        {
-            id: 'operations',
-            title: 'Operations',
-            href: '/admin/operations',
-            icon: Warehouse,
-            children: [
-                { id: 'inventory', title: 'Inventory', href: '/admin/operations/inventory', icon: Warehouse },
-                { id: 'logistics', title: 'Logistics', href: '/admin/operations/logistics', icon: Truck },
-                { id: 'procurement', title: 'Procurement', href: '/admin/operations/procurement', icon: FileText },
-            ],
-        },
-        {
             id: 'section-admin',
             title: 'Administration',
             isSectionHeader: true,
@@ -298,7 +280,6 @@ export function AdminSidebar({
             children: [
                 { id: 'users', title: 'User Management', href: '/admin/settings/users', icon: Users },
                 { id: 'system-settings', title: 'Profile Management', href: '/admin/profile', icon: Settings },
-                { id: 'audit-logs', title: 'Audit Logs', href: '/admin/settings/audit', icon: FileText },
             ],
         },
     ], []);

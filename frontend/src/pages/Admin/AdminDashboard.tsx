@@ -1,21 +1,22 @@
 import React from 'react';
-import { Users, Sprout, BarChart3, MapPin, Activity } from 'lucide-react';
+import { Users, Sprout, MapPin, BarChart3, Grid3X3 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCard } from '@/components/dashboard/StatCard';
-import { CropDistributionChart } from '@/components/dashboard/CropDistributionChart';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertCircle } from 'lucide-react';
+import { CropsPerFarmerChart } from '@/components/dashboard/crops/CropsPerFarmerChart';
+import { useCropsData } from '@/hooks/useCropsData';
+import { RegionPieChart } from '@/components/dashboard/RegionDistributionPieChart';
 
 const AdminDashboard: React.FC = () => {
     const {
         stats,
-        cropDistribution,
-        recentActivity,
         regionDistribution,
         loading,
         error,
         refetch
     } = useDashboardData();
+    const { data: cropsData, loading: cropsLoading } = useCropsData();
 
     if (error) {
         return (
@@ -73,9 +74,30 @@ const AdminDashboard: React.FC = () => {
                 />
             </div>
 
-            {/* Region Distribution */}
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Crops per Farmer Chart */}
+                <div className="bg-white border rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-lg">Crops per Farmer</h3>
+                        <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <CropsPerFarmerChart data={cropsData} loading={cropsLoading} />
+                </div>
+
+                {/* Region Distribution Pie Chart */}
+                <div className="bg-white border rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-lg">Region Distribution</h3>
+                        <Grid3X3 className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <RegionPieChart data={regionDistribution} loading={loading} />
+                </div>
+            </div>
+
+            {/* Region Details Table */}
             <div className="bg-white border rounded-lg p-6">
-                <h3 className="font-semibold text-lg mb-4">Farmers by Region</h3>
+                <h3 className="font-semibold text-lg mb-4">Region Details</h3>
                 {loading ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[1, 2, 3, 4].map((i) => (
