@@ -12,10 +12,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 
 const app = express();
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(cors());
 
 // Logger
 if (process.env.NODE_ENV === 'development') {
