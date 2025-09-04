@@ -10,10 +10,10 @@ const generateToken = (res, userId) => {
     });
 
     res.cookie("jwt", token, {
-        httpOnly: true, // JS on frontend cannot access it (XSS protection)
-        secure: process.env.NODE_ENV === "production", // only send over HTTPS in prod
-        sameSite: "lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return token;
 };
@@ -152,6 +152,8 @@ export const logoutUser = asyncHandler(async (req, res) => {
     try {
         res.cookie('jwt', '', {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
             expires: new Date(0),
         });
         res.status(200).json({ message: 'Logged out successfully' });
