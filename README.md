@@ -107,3 +107,56 @@ The backend API for the live demo is hosted on **Render's Free Tier**. Please ke
 - **Cold Starts:** After inactivity, the server spins down. The first request may take **30–60 seconds** to wake up.  
 -  **Subsequent Requests:** Once awake, responses are much faster.  
 -  **Timeouts:** If a page seems stuck, it’s likely waiting for the backend. Please give it a moment.  
+
+
+## 🛠️ Tech Stack & Architecture Decisions
+
+### Frontend
+- **React 18 + TypeScript**  
+  Robust, type-safe, and maintainable UI framework. TypeScript helps catch errors at compile time, improving developer experience and code quality.  
+
+- **Vite**  
+  Ultra-fast build tool chosen for development and bundling. Much faster than Create React App.  
+
+- **shadcn/ui + Tailwind CSS**  
+  Provides a beautiful, accessible, and customizable component library. Enables rapid UI development without sacrificing design consistency.  
+
+---
+
+### Backend
+- **Node.js + Express.js**  
+  Flexible, minimal framework for building RESTful APIs with a vast ecosystem of middleware.  
+
+- **Prisma**  
+  Modern ORM with type-safety and intuitive data modeling. Simplifies database operations while ensuring runtime safety.  
+
+- **PostgreSQL**  
+  Reliable, robust relational database. Perfect for ERP systems handling complex relationships.  
+
+---
+
+### Deployment & Hosting
+- **Frontend:** Deployed on **Vercel** – seamless Git integration, auto-deployments, and excellent global performance.  
+- **Backend:** Deployed on **Render** – simple deployment for Node.js services. Free tier is used here for demo purposes.  
+
+
+## 📜 Available Scripts
+
+### Backend (`/backend` directory)
+- `npm run dev` – Start the development server with hot reload.  
+- `npm start` – Start the production server.  
+- `npm run db:push` – Push the Prisma schema to the database.  
+- `npm run db:seed` – Seed the database with sample data.  
+
+---
+
+### Frontend (`/frontend` directory)
+- `npm run dev` – Start the Vite development server.  
+- `npm run build` – Build the app for production. 
+
+
+---
+
+<p align="center">
+  Made with ❤️ by <strong>Hassan Munene Awanzi</strong>
+</p>
