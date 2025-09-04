@@ -16,7 +16,6 @@ const app = express();
 // Middleware Number 1 Set security Header.
 app.use(helmet());
 
-
 app.use(cors({
   origin: true, // This allows any origin
   credentials: true
