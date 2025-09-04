@@ -90,7 +90,7 @@ const Login: React.FC = () => {
     const handleDemoLogin = async (role: 'admin' | 'farmer') => {
         const demoCredentials = {
             admin: { email: 'shamba@admin.com', password: '12345678' },
-            farmer: { email: 'hassan@shamba.com', password: '12345678' }
+            farmer: { email: 'zack@gmail.com', password: '12345678' }
         };
 
         setFormData(demoCredentials[role]);
