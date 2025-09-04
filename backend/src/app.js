@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middleware/errorMiddleware.js';
@@ -13,11 +12,8 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 
 const app = express();
 
-// Middleware Number 1 Set security Header.
-app.use(helmet());
-
 app.use(cors({
-  origin: true, // This allows any origin
+  origin: true,
   credentials: true
 }));
 
