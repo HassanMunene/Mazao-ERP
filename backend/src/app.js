@@ -12,7 +12,25 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "https://mazao-erp.vercel.app",
+  "http://localhost:5173"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+}));
+
 
 // Logger
 if (process.env.NODE_ENV === 'development') {
