@@ -104,31 +104,31 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4 lg:p-8">
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 lg:p-8">
             <div className="w-full max-w-4xl flex flex-col lg:flex-row gap-8">
                 {/* Left Side - Branding (Desktop only) */}
                 <div className="hidden lg:flex flex-col justify-center items-center lg:w-2/5">
                     <div className="text-start">
                         <div className="flex items-center justify-start space-x-2 mb-6">
-                            <Leaf className="w-12 h-12 text-green-600" />
-                            <span className="text-3xl font-bold text-green-800">Mazao ERP</span>
+                            <Leaf className="w-12 h-12 text-green-600 dark:text-green-500" />
+                            <span className="text-3xl font-bold text-green-800 dark:text-green-100">Mazao ERP</span>
                         </div>
-                        <h1 className="text-2xl font-semibold text-green-900 mb-4">
+                        <h1 className="text-2xl font-semibold text-green-900 dark:text-green-100 mb-4">
                             Welcome Back
                         </h1>
-                        <p className="text-green-700 mb-6">
+                        <p className="text-green-700 dark:text-green-300 mb-6">
                             Sign in to manage your agricultural operations and connect with farmers across Kenya.
                         </p>
                         <div className="space-y-3 text-left">
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Track crops in real-time
                             </div>
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Access farmer analytics
                             </div>
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Manage your cooperative
                             </div>
@@ -138,10 +138,12 @@ const Login: React.FC = () => {
 
                 {/* Right Side - Form */}
                 <div className="w-full lg:w-3/5">
-                    <Card className="shadow-xl border-green-200">
+                    <Card className="shadow-xl border-green-200 dark:border-gray-700">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-                            <CardDescription className="text-center">
+                            <CardTitle className="text-2xl text-center text-gray-900 dark:text-white">
+                                Sign In
+                            </CardTitle>
+                            <CardDescription className="text-center dark:text-gray-400">
                                 Access your Mazao ERP dashboard
                             </CardDescription>
                         </CardHeader>
@@ -171,7 +173,7 @@ const Login: React.FC = () => {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+                                        className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -181,7 +183,7 @@ const Login: React.FC = () => {
                                 <div className="flex items-center justify-between text-sm">
                                     <Link
                                         to="/forgot-password"
-                                        className="text-green-600 hover:text-green-700 font-medium"
+                                        className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium"
                                     >
                                         Forgot password?
                                     </Link>
@@ -189,7 +191,7 @@ const Login: React.FC = () => {
 
                                 <Button
                                     type="submit"
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base font-medium"
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base font-medium dark:bg-green-700 dark:hover:bg-green-800"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
@@ -207,10 +209,12 @@ const Login: React.FC = () => {
                             <div className="space-y-3">
                                 <div className="relative">
                                     <div className="absolute inset-0 flex items-center">
-                                        <span className="w-full border-t border-gray-300" />
+                                        <span className="w-full border-t border-gray-300 dark:border-gray-700" />
                                     </div>
                                     <div className="relative flex justify-center text-xs uppercase">
-                                        <span className="bg-white px-2 text-gray-500">Quick Demo Access</span>
+                                        <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+                                            Quick Demo Access
+                                        </span>
                                     </div>
                                 </div>
 
@@ -218,7 +222,7 @@ const Login: React.FC = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="flex items-center justify-center gap-2 py-5"
+                                        className="flex items-center justify-center gap-2 py-5 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                                         onClick={() => handleDemoLogin('admin')}
                                         disabled={isLoading}
                                     >
@@ -228,7 +232,7 @@ const Login: React.FC = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="flex items-center justify-center gap-2 py-5"
+                                        className="flex items-center justify-center gap-2 py-5 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                                         onClick={() => handleDemoLogin('farmer')}
                                         disabled={isLoading}
                                     >
@@ -237,16 +241,16 @@ const Login: React.FC = () => {
                                     </Button>
                                 </div>
 
-                                <div className="text-center text-xs text-gray-500">
+                                <div className="text-center text-xs text-gray-500 dark:text-gray-400">
                                     Demo credentials will be auto-filled. Click Sign In to proceed.
                                 </div>
                             </div>
 
-                            <div className="text-center text-sm pt-4 border-t border-gray-200">
-                                <span className="text-gray-600">New to Mazao ERP? </span>
+                            <div className="text-center text-sm pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <span className="text-gray-600 dark:text-gray-400">New to Mazao ERP? </span>
                                 <Link
                                     to="/register"
-                                    className="text-green-600 hover:text-green-700 font-medium"
+                                    className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium"
                                 >
                                     Create an account
                                 </Link>

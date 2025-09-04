@@ -58,7 +58,6 @@ export function AdminHeader({
         setIsLogoutDialogOpen(false);
     }, [logout]);
 
-
     // Debounced search
     const handleSearchChange = useCallback((query: string) => {
         setSearchQuery(query);

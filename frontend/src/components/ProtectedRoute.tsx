@@ -33,11 +33,19 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     if (!isAuthenticated) {
-        // Redirect to login with return url
+        // Check if the current path is an admin route
+        const isAdminRoute = location.pathname.startsWith('/admin');
+
+        // For admin routes, don't set returnUrl as they can't access admin pages without proper role
+        if (isAdminRoute) {
+            return <Navigate to="/login"/>;
+        }
+
+        // For non-admin routes, redirect to login with return url
         return <Navigate to={`${fallbackPath}?returnUrl=${encodeURIComponent(location.pathname)}`} replace />;
     }
 
-    // Check admin role if required if no admin then Not Authorised at all.
+    // Check admin role if required
     if (admin && user?.role !== 'ADMIN') {
         return <Navigate to="/unauthorized" replace />;
     }
@@ -46,7 +54,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 };
 
 // Specific route protection components
-export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const AdminRoute = ({ children }: { children: React.ReactNode }) => (
     <ProtectedRoute admin={true} fallbackPath="/unauthorized">
         {children}
     </ProtectedRoute>

@@ -71,12 +71,12 @@ const Landing = () => {
                         <>
                             <div className="flex items-center space-x-4">
                                 <span className="text-green-700 font-medium">
-                                    Welcome, {user?.profile?.fullName ||  'User'}!
+                                    Welcome, {user?.profile?.fullName || 'User'}!
                                 </span>
                                 <Button
                                     onClick={() => navigate(user?.role === 'ADMIN' ? '/admin' : '/dashboard')}
                                     variant="outline"
-                                    className="border-green-600 text-green-600 hover:bg-green-50"
+                                    className="border-green-600 text-green-600 hover:text-black"
                                 >
                                     <Gauge className="w-4 h-4 mr-2" />
                                     Dashboard
@@ -84,7 +84,7 @@ const Landing = () => {
                                 <Button
                                     onClick={handleLogout}
                                     variant="ghost"
-                                    className="text-green-700 hover:bg-green-100"
+                                    className="text-green-700"
                                 >
                                     <LogOut className="w-4 h-4 mr-2" />
                                     Logout
@@ -131,7 +131,7 @@ const Landing = () => {
                         {isAuthenticated ? (
                             <>
                                 <div className="text-white text-lg py-3 border-b border-green-700 pb-6">
-                                    Welcome, { user?.profile?.fullName || 'User'}!
+                                    Welcome, {user?.profile?.fullName || 'User'}!
                                 </div>
                                 <button
                                     onClick={() => { navigate(user?.role === 'ADMIN' ? '/admin' : '/dashboard'); setMobileMenuOpen(false); }}
@@ -180,7 +180,7 @@ const Landing = () => {
                             <>
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-green-900 leading-tight animate-fade-in-up">
                                     Welcome back,
-                                    <span className="text-green-600 block">{ user?.profile?.fullName || 'Farmer'}!</span>
+                                    <span className="text-green-600 block">{user?.profile?.fullName || 'Farmer'}!</span>
                                 </h1>
                                 <p className="text-lg text-green-700 max-w-2xl mx-auto lg:mx-0 animate-fade-in-up delay-150">
                                     Ready to continue managing your agricultural operations? Access your dashboard to view latest updates, crop performance, and farmer activities.
@@ -196,7 +196,7 @@ const Landing = () => {
                                     <Button
                                         size="lg"
                                         variant="outline"
-                                        className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-6 text-lg transition-colors"
+                                        className="border-green-600 text-green-600 hover:text-black hover:bg-green-50 px-8 py-6 text-lg transition-colors"
                                         onClick={() => navigate('/profile')}
                                     >
                                         View Profile
@@ -292,7 +292,7 @@ const Landing = () => {
                                             </div>
                                             <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                                                 <span className="text-white text-sm font-bold">
-                                                    {isAuthenticated ? ( user?.profile?.fullName?.[0] || 'U') : 'JK'}
+                                                    {isAuthenticated ? (user?.profile?.fullName?.[0] || 'U') : 'JK'}
                                                 </span>
                                             </div>
                                         </div>
@@ -305,7 +305,7 @@ const Landing = () => {
                                                 { label: 'Yield (tons)', value: '45.2', trend: '+8.5%' },
                                                 { label: 'This Season', value: 'Q1 2024', trend: 'On track' }
                                             ].map((stat, index) => (
-                                                <div key={index} className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
+                                                <div key={index} className="backdrop-blur-sm p-3 rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
                                                     <div className="text-green-900 font-bold text-lg">{stat.value}</div>
                                                     <div className="text-green-600 text-xs">{stat.label}</div>
                                                     <div className="text-emerald-500 text-xs font-medium mt-1">{stat.trend}</div>
@@ -375,23 +375,26 @@ const Landing = () => {
                         {features.map((feature, index) => (
                             <Card
                                 key={index}
-                                className="text-center border-green-100 hover:border-green-300 hover:shadow-xl transition-all duration-300 h-full transform hover:-translate-y-2 animate-fade-in-up"
+                                className="text-center border-green-100 hover:border-green-300 hover:shadow-xl transition-all duration-300 h-full transform hover:-translate-y-2 animate-fade-in-up
+                       dark:border-green-800 dark:hover:border-green-600"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 <CardHeader>
                                     <div className="flex justify-center mb-4">
                                         {feature.icon}
                                     </div>
-                                    <CardTitle className="text-green-900 text-xl">{feature.title}</CardTitle>
+                                    <CardTitle className="text-green-900 dark:text-green-100 text-xl">
+                                        {feature.title}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <CardDescription className="text-green-700 text-base">
+                                    <CardDescription className="text-green-700 dark:text-green-300 text-base">
                                         {feature.description}
                                     </CardDescription>
                                     {isAuthenticated && (
                                         <Button
                                             variant="link"
-                                            className="text-green-600 mt-4"
+                                            className="text-green-600 dark:text-green-400 mt-4"
                                             onClick={() => navigate(user?.role === 'ADMIN' ? '/admin' : '/dashboard')}
                                         >
                                             Explore feature →
@@ -401,7 +404,6 @@ const Landing = () => {
                             </Card>
                         ))}
                     </div>
-
                     {/* Additional CTA for logged-in users */}
                     {isAuthenticated && (
                         <div className="text-center mt-16 animate-fade-in-up">

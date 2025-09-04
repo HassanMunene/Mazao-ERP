@@ -131,8 +131,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch (error) {
             console.warn('Logout API call failed:', error);
         } finally {
+            // Get current path before clearing auth
+            const currentPath = window.location.pathname;
+            const isAdminRoute = currentPath.startsWith('/admin');
+
             // Always clear local state regardless of API call success
             handleAuthFailure();
+
+            // If we were on an admin route, redirect to login without returnUrl
+            if (isAdminRoute) {
+                window.location.href = '/login';
+            }
         }
     };
 

@@ -129,31 +129,31 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4 lg:p-8">
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 lg:p-8">
             <div className="w-full max-w-4xl flex flex-col lg:flex-row gap-8">
                 {/* Left Side - Branding (Desktop only) */}
                 <div className="hidden lg:flex flex-col justify-center items-center lg:w-2/5">
                     <div className="text-left">
                         <div className="flex items-center justify-start space-x-2 mb-6">
-                            <Leaf className="w-12 h-12 text-green-600" />
-                            <span className="text-3xl font-bold text-green-800">Mazao ERP</span>
+                            <Leaf className="w-12 h-12 text-green-600 dark:text-green-500" />
+                            <span className="text-3xl font-bold text-green-800 dark:text-green-100">Mazao ERP</span>
                         </div>
-                        <h1 className="text-2xl font-semibold text-green-900 mb-4">
+                        <h1 className="text-2xl font-semibold text-green-900 dark:text-green-100 mb-4">
                             Join Our Agricultural Community
                         </h1>
-                        <p className="text-green-700 mb-6">
+                        <p className="text-green-700 dark:text-green-300 mb-6">
                             Connect with farmers across Kenya and manage your agricultural operations with ease.
                         </p>
                         <div className="space-y-3 text-left">
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Real-time crop tracking
                             </div>
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Connect with local farmers
                             </div>
-                            <div className="flex items-center text-green-800">
+                            <div className="flex items-center text-green-800 dark:text-green-200">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                                 Market insights and analytics
                             </div>
@@ -163,10 +163,12 @@ const Register: React.FC = () => {
 
                 {/* Right Side - Form */}
                 <div className="w-full lg:w-3/5">
-                    <Card className="shadow-xl border-green-200">
+                    <Card className="shadow-xl border-green-200 dark:border-gray-700">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
-                            <CardDescription className="text-center">
+                            <CardTitle className="text-2xl text-center text-gray-900 dark:text-white">
+                                Create Account
+                            </CardTitle>
+                            <CardDescription className="text-center dark:text-gray-400">
                                 Join thousands of farmers using Mazao ERP
                             </CardDescription>
                         </CardHeader>
@@ -230,7 +232,7 @@ const Register: React.FC = () => {
                                         />
                                         <button
                                             type="button"
-                                            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+                                            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                                             onClick={() => setShowPassword(!showPassword)}
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -250,7 +252,7 @@ const Register: React.FC = () => {
                                         />
                                         <button
                                             type="button"
-                                            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+                                            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -260,7 +262,7 @@ const Register: React.FC = () => {
 
                                 <Button
                                     type="submit"
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base font-medium"
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base font-medium dark:bg-green-700 dark:hover:bg-green-800"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
@@ -274,11 +276,11 @@ const Register: React.FC = () => {
                                 </Button>
                             </form>
 
-                            <div className="text-center text-sm pt-4 border-t border-gray-200">
-                                <span className="text-gray-600">Already have an account? </span>
+                            <div className="text-center text-sm pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <span className="text-gray-600 dark:text-gray-400">Already have an account? </span>
                                 <Link
                                     to="/login"
-                                    className="text-green-600 hover:text-green-700 font-medium"
+                                    className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium"
                                 >
                                     Sign in here
                                 </Link>
@@ -287,14 +289,14 @@ const Register: React.FC = () => {
                     </Card>
 
                     {/* Terms Notice */}
-                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                        <p className="text-sm text-blue-800">
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center dark:bg-blue-900/20 dark:border-blue-800">
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
                             By creating an account, you agree to our{' '}
-                            <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+                            <a href="#" className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium">
                                 Terms of Service
                             </a>{' '}
                             and{' '}
-                            <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+                            <a href="#" className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium">
                                 Privacy Policy
                             </a>
                         </p>
