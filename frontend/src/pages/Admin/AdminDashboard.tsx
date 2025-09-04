@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Sprout, MapPin, BarChart3, Grid3X3 } from 'lucide-react';
+import { Users, Sprout, MapPin, BarChart3 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { Button } from '@/components/ui/button';
