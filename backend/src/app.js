@@ -16,11 +16,9 @@ const app = express();
 // Middleware Number 1 Set security Header.
 app.use(helmet());
 
-// Enable CORS for frontend
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://mazao-erp.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: true, // This allows any origin
   credentials: true
 }));
 
