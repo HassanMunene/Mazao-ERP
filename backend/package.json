@@ -24,11 +24,11 @@
     "express-async-handler": "^1.2.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "prisma": "^6.15.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "prisma": "^6.15.0"
+    "nodemon": "^3.1.10"
   },
   "type": "module"
 }
